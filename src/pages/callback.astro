@@ -1,0 +1,38 @@
+---
+// callback.astro — OAuth callback apstrāde
+import Layout from "../components/astro/Layout.astro";
+---
+
+<Layout title="Autorizācija">
+  <main class="landing-page">
+    <div id="callback-status">
+      <p>Apstrādā autorizāciju...</p>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  import { handleOAuthCallback } from "../lib/auth";
+
+  const statusEl = document.getElementById("callback-status");
+
+  async function processCallback() {
+    const result = await handleOAuthCallback();
+
+    if (result.success) {
+      if (statusEl) {
+        statusEl.innerHTML = "<p>Autorizācija veiksmīga! Pāradresē...</p>";
+      }
+      window.location.href = result.returnTo || "/dashboard";
+    } else {
+      if (statusEl) {
+        statusEl.innerHTML = `
+          <div class="error-message">${result.error}</div>
+          <p><a href="/">Atpakaļ uz sākumu</a></p>
+        `;
+      }
+    }
+  }
+
+  processCallback();
+</script>
