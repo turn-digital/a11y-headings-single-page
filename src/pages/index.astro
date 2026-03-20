@@ -462,6 +462,7 @@ import Header from "../components/react/Header";
   import { CHECK_LABELS } from "../lib/types";
   import { fetchCheckById, fetchHistory, formatDate, formatRelativeTime, truncateUrl } from "../lib/api";
 
+  const basePath = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
   let currentCheckId: number | null = null;
 
   // ===== Sidebar Toggle Logic =====
@@ -586,7 +587,7 @@ import Header from "../components/react/Header";
 
     // Login button handler
     loginBtn?.addEventListener("click", () => {
-      initiateGoogleLogin("/");
+      initiateGoogleLogin(`${basePath}/`);
     });
 
     // Wait for auth loading to complete
@@ -676,7 +677,7 @@ import Header from "../components/react/Header";
           e.preventDefault();
           const id = parseInt((item as HTMLElement).dataset.id || "0");
           if (id && id !== currentCheckId) {
-            window.history.pushState({}, "", `/?id=${id}`);
+            window.history.pushState({}, "", `${basePath}/?id=${id}`);
             currentCheckId = id;
 
             listEl.querySelectorAll(".history-item").forEach((el) => el.classList.remove("active"));
