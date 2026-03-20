@@ -11,6 +11,8 @@ export const CONFIG = {
   // Redirect URI tiks noteikts dinamiski, pamatojoties uz pašreizējo URL
   getRedirectUri: () => {
     if (typeof window === "undefined") return "";
-    return `${window.location.origin}/callback`;
+    // Use pathname to detect base path (e.g., /a11y-headings-single-page)
+    const basePath = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
+    return `${window.location.origin}${basePath}/callback`;
   },
 };
