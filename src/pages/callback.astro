@@ -14,6 +14,7 @@ import Layout from "../components/astro/Layout.astro";
 <script>
   import { handleOAuthCallback } from "../lib/auth";
 
+  const basePath = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
   const statusEl = document.getElementById("callback-status");
 
   async function processCallback() {
@@ -23,12 +24,12 @@ import Layout from "../components/astro/Layout.astro";
       if (statusEl) {
         statusEl.innerHTML = "<p>Autorizācija veiksmīga! Pāradresē...</p>";
       }
-      window.location.href = result.returnTo || "/dashboard";
+      window.location.href = result.returnTo || `${basePath}/`;
     } else {
       if (statusEl) {
         statusEl.innerHTML = `
           <div class="error-message">${result.error}</div>
-          <p><a href="/">Atpakaļ uz sākumu</a></p>
+          <p><a href="${basePath}/">Atpakaļ uz sākumu</a></p>
         `;
       }
     }

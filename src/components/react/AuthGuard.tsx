@@ -24,7 +24,8 @@ export default function AuthGuard({ children }: AuthGuardProps) {
         const valid = await verifyToken();
         if (!valid) {
           // Token nederīgs, pāradresē uz sākumlapu
-          window.location.href = "/";
+          const basePath = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
+          window.location.href = `${basePath}/`;
         }
       } else if (!isLoading && !auth) {
         // Nav auth, pāradresē uz pieteikšanos ar return URL

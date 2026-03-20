@@ -27,7 +27,8 @@ async function apiRequest<T>(
 
   if (response.status === 401) {
     clearAuth();
-    window.location.href = "/";
+    const basePath = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
+    window.location.href = `${basePath}/`;
     throw new Error("Sesija beigusies");
   }
 

@@ -75,7 +75,8 @@ export async function handleOAuthCallback(): Promise<{
     return { success: false, error: "Nav atrasts code_verifier" };
   }
 
-  const returnTo = sessionStorage.getItem("oauth_return_to") || "/";
+  const basePath = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
+  const returnTo = sessionStorage.getItem("oauth_return_to") || `${basePath}/`;
 
   // Notīra sessionStorage
   sessionStorage.removeItem("oauth_code_verifier");
@@ -162,5 +163,6 @@ export async function verifyToken(): Promise<boolean> {
 // Iziet no sistēmas
 export function logout(): void {
   clearAuth();
-  window.location.href = "/";
+  const basePath = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
+  window.location.href = `${basePath}/`;
 }

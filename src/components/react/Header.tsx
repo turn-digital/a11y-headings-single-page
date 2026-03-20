@@ -18,6 +18,7 @@ export default function Header() {
   const isLoading = useStore($isAuthLoading);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const basePath = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 
   useEffect(() => {
     initAuthFromStorage();
@@ -82,7 +83,7 @@ export default function Header() {
         </HeaderGlobalAction>
       )}
 
-      <HeaderName href="/" prefix="">
+      <HeaderName href={`${basePath}/`} prefix="">
         A11y Headings
       </HeaderName>
 
