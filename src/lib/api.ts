@@ -84,6 +84,37 @@ export async function fetchLimits(): Promise<Limits> {
   return apiRequest<Limits>("/api/limits");
 }
 
+// Izveido share saiti pārbaudei
+export async function createShareLink(checkId: number): Promise<{ share_token: string; share_url: string }> {
+  // Mock mode
+  if (CONFIG.MOCK_MODE) {
+    await delay(200);
+    return {
+      share_token: "MockTkn1",
+      share_url: "/share/MockTkn1",
+    };
+  }
+
+  return apiRequest<{ share_token: string; share_url: string }>(
+    `/api/check/${checkId}/share`,
+    { method: "POST" }
+  );
+}
+
+// Noņem share saiti
+export async function removeShareLink(checkId: number): Promise<void> {
+  // Mock mode
+  if (CONFIG.MOCK_MODE) {
+    await delay(200);
+    return;
+  }
+
+  await apiRequest<{ success: boolean }>(
+    `/api/check/${checkId}/unshare`,
+    { method: "POST" }
+  );
+}
+
 // Palīgfunkcija aizkaves simulēšanai
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));

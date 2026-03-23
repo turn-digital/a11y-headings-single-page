@@ -68,6 +68,8 @@ export interface CheckDetail {
   score: number;
   issues_count: number;
   result_json: string;
+  share_token: string | null;
+  shared_at: string | null;
   created_at: string;
 }
 

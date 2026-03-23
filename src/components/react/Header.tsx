@@ -10,40 +10,21 @@ import {
   SkipToContent,
 } from "@carbon/react";
 import { Logout, UserAvatar, Menu, Close } from "@carbon/icons-react";
-import { $auth, $isAuthLoading, initAuthFromStorage } from "../../lib/store";
-import { logout, verifyToken } from "../../lib/auth";
+import { $auth } from "../../lib/store";
+import { logout } from "../../lib/auth";
 
-export default function Header() {
+interface HeaderProps {
+  onMenuToggle?: () => void;
+  sidebarOpen?: boolean;
+}
+
+export default function Header({ onMenuToggle, sidebarOpen = false }: HeaderProps) {
   const auth = useStore($auth);
-  const isLoading = useStore($isAuthLoading);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [imgError, setImgError] = useState(false);
   const basePath = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
 
+  // Handle body scroll lock
   useEffect(() => {
-    initAuthFromStorage();
-  }, []);
-
-  useEffect(() => {
-    if (auth && !isLoading) {
-      verifyToken();
-    }
-  }, [auth, isLoading]);
-
-  // Listen for sidebar close events (when check is selected on mobile)
-  useEffect(() => {
-    const handleCloseSidebar = () => setSidebarOpen(false);
-    window.addEventListener("closeSidebar", handleCloseSidebar);
-    return () => window.removeEventListener("closeSidebar", handleCloseSidebar);
-  }, []);
-
-  // Dispatch sidebar state to the page
-  useEffect(() => {
-    window.dispatchEvent(
-      new CustomEvent("sidebarToggle", { detail: { open: sidebarOpen } })
-    );
-
-    // Handle body scroll lock
     if (sidebarOpen) {
       document.body.style.overflow = "hidden";
     } else {
@@ -54,29 +35,25 @@ export default function Header() {
   // Handle Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && sidebarOpen) {
-        setSidebarOpen(false);
+      if (e.key === "Escape" && sidebarOpen && onMenuToggle) {
+        onMenuToggle();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [sidebarOpen]);
-
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
+  }, [sidebarOpen, onMenuToggle]);
 
   return (
     <CarbonHeader aria-label="A11y Headings">
       <SkipToContent />
 
       {/* Hamburger menu - only visible on mobile/tablet when authenticated */}
-      {auth && (
+      {auth && onMenuToggle && (
         <HeaderGlobalAction
           aria-label={sidebarOpen ? "Aizvērt izvēlni" : "Atvērt vēsturi"}
           aria-expanded={sidebarOpen}
           aria-controls="history-sidebar"
-          onClick={toggleSidebar}
+          onClick={onMenuToggle}
           className="menu-toggle"
         >
           {sidebarOpen ? <Close size={20} /> : <Menu size={20} />}

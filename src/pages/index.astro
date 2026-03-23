@@ -1,144 +1,59 @@
 ---
-// index.astro — galvenā lapa ar vēsturi un detaļām
+// index.astro — galvenā lapa ar Carbon React komponentēm
 import Layout from "../components/astro/Layout.astro";
-import Header from "../components/react/Header";
+import DashboardApp from "../components/react/DashboardApp";
 ---
 
 <Layout title="A11y Headings">
-  <Header client:load />
-
-  <!-- Login ekrāns (redzams tikai ja nav autorizēts) -->
-  <div id="login-screen" class="login-screen" style="display: none;">
-    <div class="login-content">
-      <h1>A11y Headings Checker</h1>
-      <p>Pārbaudiet savu lapu virsrakstu struktūru atbilstību WCAG 2.4.6 vadlīnijām.</p>
-      <button id="login-btn" class="login-btn">Pieslēgties ar Google</button>
-    </div>
-  </div>
-
-  <!-- Galvenais saturs (redzams tikai ja autorizēts) -->
-  <div id="main-content" class="check-page-layout" style="display: none;">
-    <!-- Overlay for mobile sidebar -->
-    <div
-      id="sidebar-overlay"
-      class="sidebar-overlay"
-      aria-hidden="true"
-      tabindex="-1"
-    ></div>
-
-    <aside
-      class="history-sidebar"
-      id="history-sidebar"
-      aria-label="Pārbaužu vēsture"
-    >
-      <div class="sidebar-header">
-        <h2>Vēsture</h2>
-        <button
-          id="close-sidebar-btn"
-          class="close-sidebar-btn"
-          aria-label="Aizvērt izvēlni"
-          type="button"
-        >
-          <svg width="20" height="20" viewBox="0 0 32 32" fill="currentColor">
-            <path d="M24 9.4L22.6 8 16 14.6 9.4 8 8 9.4 14.6 16 8 22.6 9.4 24 16 17.4 22.6 24 24 22.6 17.4 16 24 9.4z"/>
-          </svg>
-        </button>
-      </div>
-      <div class="history-list" id="history-list" role="list">
-        <p>Ielādē...</p>
-      </div>
-    </aside>
-
-    <main class="check-main" id="check-container">
-      <div class="loading-container">
-        <p>Ielādē...</p>
-      </div>
-    </main>
-  </div>
+  <DashboardApp client:load />
 </Layout>
 
 <style is:global>
-  /* ===== Login Screen ===== */
-  .login-screen {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: calc(100vh - 48px);
-    text-align: center;
-    padding: 2rem;
+  /* ===== Base Reset ===== */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
   }
 
-  .login-content {
-    max-width: 400px;
-  }
-
-  .login-content h1 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-  }
-
-  .login-content p {
-    color: var(--cds-text-secondary, #525252);
-    margin-bottom: 2rem;
-  }
-
-  .login-btn {
-    background: var(--cds-button-primary, #0f62fe);
-    color: white;
-    border: none;
-    padding: 0.875rem 2rem;
-    font-size: 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-
-  .login-btn:hover {
-    background: var(--cds-button-primary-hover, #0353e9);
-  }
-
-  .login-btn:focus {
-    outline: 2px solid var(--cds-focus, #0f62fe);
-    outline-offset: 2px;
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
   }
 
   /* ===== Main Layout ===== */
   .check-page-layout {
-    display: grid;
-    grid-template-columns: 300px 1fr;
+    display: flex;
     min-height: calc(100vh - 48px);
-    position: relative;
+    width: 100%;
+    overflow-x: hidden;
   }
 
   /* ===== Overlay ===== */
   .sidebar-overlay {
     display: none;
     position: fixed;
-    top: 48px;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 48px 0 0 0;
     background: rgba(0, 0, 0, 0.5);
-    z-index: 99;
-    opacity: 0;
-    transition: opacity 0.2s ease;
+    z-index: 150;
   }
 
   .sidebar-overlay.visible {
     display: block;
-    opacity: 1;
   }
 
   /* ===== Sidebar ===== */
   .history-sidebar {
-    background: var(--cds-background, #fff);
-    border-right: 1px solid var(--cds-border-subtle, #e0e0e0);
+    width: 280px;
+    min-width: 280px;
+    flex-shrink: 0;
+    background: #fff;
+    border-right: 1px solid #e0e0e0;
     padding: 1rem;
     overflow-y: auto;
-    max-height: calc(100vh - 48px);
+    height: calc(100vh - 48px);
     position: sticky;
     top: 48px;
-    z-index: 100;
   }
 
   .sidebar-header {
@@ -147,37 +62,17 @@ import Header from "../components/react/Header";
     justify-content: space-between;
     margin-bottom: 1rem;
     padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--cds-border-subtle, #e0e0e0);
+    border-bottom: 1px solid #e0e0e0;
   }
 
   .sidebar-header h2 {
     font-size: 0.875rem;
     font-weight: 600;
     margin: 0;
-    color: var(--cds-text-primary, #161616);
   }
 
   .close-sidebar-btn {
     display: none;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    border-radius: 4px;
-    color: var(--cds-text-primary, #161616);
-  }
-
-  .close-sidebar-btn:hover {
-    background: var(--cds-layer-hover-01, #e8e8e8);
-  }
-
-  .close-sidebar-btn:focus {
-    outline: 2px solid var(--cds-focus, #0f62fe);
-    outline-offset: -2px;
   }
 
   .history-list {
@@ -189,100 +84,390 @@ import Header from "../components/react/Header";
   .history-item {
     display: flex;
     align-items: flex-start;
-    gap: 0.625rem;
+    gap: 0.5rem;
     padding: 0.625rem 0.75rem;
     width: 100%;
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 4px;
-    text-decoration: none;
-    color: inherit;
-    cursor: pointer;
-    transition: background 0.15s;
+    background: #f4f4f4;
     border: none;
-    font-family: inherit;
-    font-size: inherit;
+    border-radius: 4px;
+    cursor: pointer;
     text-align: left;
+    font: inherit;
   }
 
   .history-item:hover {
-    background: rgba(0, 0, 0, 0.1);
+    background: #e8e8e8;
   }
 
   .history-item.active {
-    background: rgba(0, 0, 0, 0.14);
+    background: #c6c6c6;
   }
 
-  .history-item:focus {
-    outline: 2px solid var(--cds-focus, #0f62fe);
-    outline-offset: -2px;
-  }
-
-  .status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    margin-top: 5px;
+  .status-icon {
     flex-shrink: 0;
-    opacity: 0.85;
+    margin-top: 2px;
   }
 
-  .status-dot.pass {
-    background: var(--cds-support-success, #198038);
-  }
-
-  .status-dot.fail {
-    background: var(--cds-support-error, #da1e28);
-  }
+  .status-pass { color: #198038; }
+  .status-fail { color: #da1e28; }
 
   .item-content {
     flex: 1;
     min-width: 0;
+    overflow: hidden;
   }
 
   .item-title {
     font-size: 0.875rem;
-    font-weight: 400;
-    color: var(--cds-text-primary, #161616);
-    line-height: 1.3;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
   .item-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
     font-size: 0.75rem;
-    color: var(--cds-text-secondary, #8d8d8d);
-    margin-top: 0.1875rem;
+    color: #8d8d8d;
   }
 
   /* ===== Main Content ===== */
   .check-main {
-    padding: 2rem;
-    max-width: 900px;
+    flex: 1;
+    min-width: 0;
+    max-width: 100%;
+    padding: 1.5rem;
+    overflow: hidden;
   }
 
   .loading-container {
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     min-height: 200px;
   }
 
-  /* ===== Tablet (769px - 1024px) ===== */
+  /* ===== Check Detail ===== */
+  .check-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 900px;
+    overflow: hidden;
+  }
+
+  .check-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .check-detail-info {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .check-detail-info h1 {
+    font-size: 1.25rem;
+    margin: 0 0 0.5rem;
+    word-break: break-word;
+  }
+
+  .check-url {
+    font-size: 0.875rem;
+    word-break: break-all;
+  }
+
+  .check-meta {
+    font-size: 0.875rem;
+    color: #525252;
+    margin-top: 0.25rem;
+  }
+
+  .check-detail-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+
+  .share-url-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: #f4f4f4;
+    border-radius: 4px;
+    flex-wrap: wrap;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .share-url-link {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.875rem;
+    word-break: break-all;
+    color: #0f62fe;
+  }
+
+  .share-url-link:hover {
+    text-decoration: underline;
+  }
+
+  .share-url-copy {
+    flex-shrink: 0;
+  }
+
+  .copied-tag {
+    flex-shrink: 0;
+  }
+
+  .compliance-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.5rem;
+  }
+
+  .compliance-badge svg {
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+
+  .summary-box {
+    background: #f4f4f4;
+    padding: 1rem;
+    border-radius: 4px;
+    line-height: 1.5;
+    word-break: break-word;
+  }
+
+  .check-detail h2 {
+    font-size: 1.125rem;
+    margin: 0;
+  }
+
+  .check-item-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .no-issues {
+    color: #525252;
+    margin: 0;
+  }
+
+  /* ===== Findings Cards ===== */
+  .findings-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .finding-card {
+    background: #f4f4f4;
+    border-radius: 4px;
+    border-left: 3px solid #da1e28;
+    padding: 0.75rem 1rem;
+  }
+
+  .finding-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .finding-element {
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  .finding-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding-left: 1.5rem;
+  }
+
+  .finding-row {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  .finding-label {
+    color: #525252;
+    flex-shrink: 0;
+  }
+
+  .finding-value {
+    word-break: break-word;
+  }
+
+  .finding-expected {
+    color: #198038;
+  }
+
+  /* ===== Outline Section - Responsive Fix ===== */
+  .outline-section {
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .outline-comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .outline-col {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .outline-col h3 {
+    font-size: 0.875rem;
+    color: #525252;
+    margin: 0 0 0.5rem;
+    font-weight: 500;
+  }
+
+  /* Fix Carbon CodeSnippet width - CRITICAL */
+  .outline-code,
+  .outline-code.cds--snippet,
+  .outline-code.cds--snippet--multi {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .outline-code .cds--snippet-container,
+  .cds--snippet-container {
+    max-width: 100% !important;
+  }
+
+  .outline-code pre,
+  .cds--snippet--multi pre {
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .outline-current .cds--snippet--multi {
+    background: #fff8e6;
+    border: 1px solid #f1c21b;
+  }
+
+  .outline-suggested .cds--snippet--multi,
+  .outline-good.cds--snippet--multi {
+    background: #e8f4e8;
+    border: 1px solid #198038;
+  }
+
+  .outline-success {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .outline-success .cds--tag {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.25rem;
+  }
+
+  .outline-success .cds--tag svg {
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+
+  /* ===== Accordion Fix ===== */
+  .cds--accordion__content {
+    overflow-x: auto;
+  }
+
+  /* ===== Welcome Screen ===== */
+  .welcome-screen {
+    padding: 1.5rem;
+  }
+
+  .welcome-screen h1 {
+    font-size: 1.5rem;
+    margin: 0 0 0.5rem;
+  }
+
+  .welcome-instruction {
+    color: #525252;
+    margin: 0;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  .stat-card {
+    text-align: center;
+    padding: 1.5rem;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 600;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: #525252;
+    margin-top: 0.25rem;
+  }
+
+  .reset-info {
+    color: #525252;
+    margin-top: 1.5rem;
+    font-size: 0.875rem;
+  }
+
+  /* ===== RESPONSIVE: Tablet (1024px) ===== */
   @media (max-width: 1024px) {
-    .check-page-layout {
-      grid-template-columns: 260px 1fr;
+    .history-sidebar {
+      width: 220px;
+      min-width: 220px;
     }
 
     .check-main {
-      padding: 1.5rem;
+      padding: 1rem;
+    }
+
+    .outline-comparison {
+      gap: 0.75rem;
     }
   }
 
-  /* ===== Mobile/Small Tablet (up to 768px) ===== */
+  /* ===== RESPONSIVE: Small Tablet (768px) ===== */
   @media (max-width: 768px) {
     .check-page-layout {
-      grid-template-columns: 1fr;
+      display: block;
     }
 
     .history-sidebar {
@@ -290,10 +475,12 @@ import Header from "../components/react/Header";
       top: 48px;
       left: 0;
       bottom: 0;
-      width: 300px;
-      max-width: 85vw;
+      width: 85vw;
+      max-width: 300px;
+      min-width: auto;
       transform: translateX(-100%);
       transition: transform 0.25s ease;
+      z-index: 200;
       box-shadow: none;
     }
 
@@ -307,92 +494,76 @@ import Header from "../components/react/Header";
     }
 
     .check-main {
+      width: 100%;
+      max-width: 100%;
       padding: 1rem;
     }
+
+    .check-detail {
+      max-width: 100%;
+    }
+
+    .check-detail-header {
+      flex-direction: column;
+    }
+
+    .check-detail-actions {
+      width: 100%;
+    }
+
+    /* Stack outline comparison vertically */
+    .outline-comparison {
+      grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
   }
 
-  /* ===== Small Mobile (up to 480px) ===== */
+  /* ===== RESPONSIVE: Mobile (480px) ===== */
   @media (max-width: 480px) {
-    .login-content h1 {
-      font-size: 1.5rem;
+    .history-sidebar {
+      width: 100%;
+      max-width: 100%;
     }
 
     .check-main {
       padding: 0.75rem;
     }
 
-    .history-sidebar {
-      width: 100%;
-      max-width: 100%;
+    .check-detail {
+      gap: 1rem;
     }
-  }
 
-  /* ===== Welcome Screen ===== */
-  .welcome-screen {
-    padding: 2rem;
-  }
+    .check-detail-info h1 {
+      font-size: 1.125rem;
+    }
 
-  .welcome-screen h1 {
-    font-size: 1.5rem;
-    margin: 0 0 0.5rem;
-  }
+    .check-detail-actions {
+      flex-direction: column;
+    }
 
-  .welcome-instruction {
-    color: var(--cds-text-secondary, #525252);
-    margin: 0;
-  }
+    .check-detail-actions .cds--btn {
+      width: 100%;
+      justify-content: center;
+    }
 
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin-top: 2rem;
-    text-align: center;
-  }
-
-  .stat-card {
-    background: var(--cds-layer-01, #f4f4f4);
-    padding: 1.5rem;
-    border-radius: 8px;
-  }
-
-  .stat-value {
-    font-size: 2rem;
-    font-weight: 600;
-    color: var(--cds-text-primary, #161616);
-  }
-
-  .stat-label {
-    font-size: 0.875rem;
-    color: var(--cds-text-secondary, #525252);
-  }
-
-  .reset-info {
-    color: var(--cds-text-secondary, #525252);
-    margin-top: 1.5rem;
-    font-size: 0.875rem;
-  }
-
-  @media (max-width: 600px) {
     .stats-grid {
       grid-template-columns: 1fr;
-      gap: 0.75rem;
     }
 
     .stat-card {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      text-align: left;
       padding: 1rem;
     }
 
     .stat-value {
       font-size: 1.5rem;
-      order: 2;
-    }
-
-    .stat-label {
-      order: 1;
     }
 
     .welcome-screen {
@@ -402,426 +573,39 @@ import Header from "../components/react/Header";
     .welcome-screen h1 {
       font-size: 1.25rem;
     }
-  }
 
-  /* ===== Outline Comparison Section ===== */
-  .outline-section {
-    margin-top: 2rem;
-  }
-
-  .outline-section h2 {
-    font-size: 1.25rem;
-    margin-bottom: 1rem;
-  }
-
-  .outline-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-
-  .outline-col h3 {
-    font-size: 0.875rem;
-    margin-bottom: 0.5rem;
-    color: var(--cds-text-secondary, #525252);
-  }
-
-  .outline-col pre {
-    background: var(--cds-layer-01, #f4f4f4);
-    padding: 1rem;
-    border-radius: 4px;
-    font-size: 0.8125rem;
-    line-height: 1.6;
-    overflow-x: auto;
-    margin: 0;
-  }
-
-  @media (max-width: 600px) {
-    .outline-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  /* ===== Check Detail Tables ===== */
-  @media (max-width: 600px) {
-    .check-main table {
+    /* Table compact on mobile */
+    .findings-table {
       font-size: 0.75rem;
     }
 
-    .check-main table th,
-    .check-main table td {
-      padding: 0.375rem;
+    .findings-table th,
+    .findings-table td {
+      padding: 0.375rem 0.5rem;
+    }
+
+    .share-url-container {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  /* ===== RESPONSIVE: Small Mobile (360px) ===== */
+  @media (max-width: 360px) {
+    .check-main {
+      padding: 0.5rem;
+    }
+
+    .check-detail-info h1 {
+      font-size: 1rem;
+    }
+
+    .stat-card {
+      padding: 0.75rem;
+    }
+
+    .stat-value {
+      font-size: 1.25rem;
     }
   }
 </style>
-
-<script>
-  import { initAuthFromStorage, $auth, $isAuthLoading, $limits } from "../lib/store";
-  import { initiateGoogleLogin, verifyToken } from "../lib/auth";
-  import type { CheckDetail as CheckDetailType, CheckResult, CheckItem, Finding, HistoryCheck } from "../lib/types";
-  import { CHECK_LABELS } from "../lib/types";
-  import { fetchCheckById, fetchHistory, formatDate, formatRelativeTime, truncateUrl } from "../lib/api";
-
-  const basePath = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
-  let currentCheckId: number | null = null;
-
-  // ===== Sidebar Toggle Logic =====
-  function setupSidebarToggle() {
-    const sidebar = document.getElementById("history-sidebar");
-    const overlay = document.getElementById("sidebar-overlay");
-    const closeBtn = document.getElementById("close-sidebar-btn");
-
-    if (!sidebar || !overlay) return;
-
-    // Listen for toggle events from Header component
-    window.addEventListener("sidebarToggle", ((e: CustomEvent) => {
-      const isOpen = e.detail.open;
-      if (isOpen) {
-        openSidebar();
-      } else {
-        closeSidebar();
-      }
-    }) as EventListener);
-
-    // Close on overlay click
-    overlay.addEventListener("click", () => {
-      closeSidebar();
-      window.dispatchEvent(new CustomEvent("closeSidebar"));
-    });
-
-    // Close button click
-    closeBtn?.addEventListener("click", () => {
-      closeSidebar();
-      window.dispatchEvent(new CustomEvent("closeSidebar"));
-    });
-
-    function openSidebar() {
-      sidebar.classList.add("open");
-      overlay.classList.add("visible");
-      sidebar.setAttribute("aria-hidden", "false");
-
-      // Focus first interactive element
-      const firstItem = sidebar.querySelector<HTMLElement>(".history-item, button");
-      if (firstItem) {
-        setTimeout(() => firstItem.focus(), 100);
-      }
-    }
-
-    function closeSidebar() {
-      sidebar.classList.remove("open");
-      overlay.classList.remove("visible");
-      sidebar.setAttribute("aria-hidden", "true");
-    }
-  }
-
-  // Check if we're on mobile
-  function isMobile(): boolean {
-    return window.matchMedia("(max-width: 768px)").matches;
-  }
-
-  function showWelcomeScreen(container: HTMLElement) {
-    const limits = $limits.get();
-    const auth = $auth.get();
-    const mobile = isMobile();
-
-    const cardStyle = `
-      background: var(--cds-layer-01, #f4f4f4);
-      padding: 1.5rem;
-      border-radius: 8px;
-      text-align: center;
-    `;
-
-    const valueStyle = `
-      font-size: 2rem;
-      font-weight: 600;
-      color: var(--cds-text-primary, #161616);
-    `;
-
-    const labelStyle = `
-      font-size: 0.875rem;
-      color: var(--cds-text-secondary, #525252);
-      margin-top: 0.25rem;
-    `;
-
-    const usageHtml = limits ? `
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 2rem;">
-        <div style="${cardStyle}">
-          <div style="${valueStyle}">${limits.used}</div>
-          <div style="${labelStyle}">Izmantotas</div>
-        </div>
-        <div style="${cardStyle}">
-          <div style="${valueStyle}">${limits.remaining}</div>
-          <div style="${labelStyle}">Atlikušas</div>
-        </div>
-        <div style="${cardStyle}">
-          <div style="${valueStyle}">${limits.limit}</div>
-          <div style="${labelStyle}">Limits</div>
-        </div>
-      </div>
-      <p style="color: var(--cds-text-secondary, #525252); margin-top: 1.5rem; font-size: 0.875rem;">
-        Limits atjaunojas: ${formatDate(limits.resets_at)}
-      </p>
-    ` : '';
-
-    const instructionText = mobile
-      ? 'Nospiediet izvēlnes pogu augšā, lai skatītu pārbaužu vēsturi.'
-      : 'Izvēlieties pārbaudi no saraksta kreisajā pusē, lai skatītu detaļas.';
-
-    container.innerHTML = `
-      <div style="padding: 2rem;">
-        <h1 style="font-size: 1.5rem; margin: 0 0 0.5rem;">Sveiki, ${escapeHtml(auth?.user.name || 'lietotāj')}!</h1>
-        <p style="color: var(--cds-text-secondary, #525252); margin: 0;">${instructionText}</p>
-        ${usageHtml}
-      </div>
-    `;
-  }
-
-  async function init() {
-    initAuthFromStorage();
-
-    const loginScreen = document.getElementById("login-screen");
-    const mainContent = document.getElementById("main-content");
-    const loginBtn = document.getElementById("login-btn");
-
-    if (!loginScreen || !mainContent) return;
-
-    // Login button handler
-    loginBtn?.addEventListener("click", () => {
-      initiateGoogleLogin(`${basePath}/`);
-    });
-
-    // Wait for auth loading to complete
-    const auth = $auth.get();
-    const isLoading = $isAuthLoading.get();
-
-    if (isLoading) {
-      // Wait a bit for auth to initialize
-      await new Promise(resolve => setTimeout(resolve, 100));
-    }
-
-    const currentAuth = $auth.get();
-
-    if (!currentAuth) {
-      // Show login screen
-      loginScreen.style.display = "flex";
-      mainContent.style.display = "none";
-      return;
-    }
-
-    // Verify token
-    const valid = await verifyToken();
-    if (!valid) {
-      loginScreen.style.display = "flex";
-      mainContent.style.display = "none";
-      return;
-    }
-
-    // Show main content
-    loginScreen.style.display = "none";
-    mainContent.style.display = "grid";
-
-    // Setup sidebar toggle for mobile
-    setupSidebarToggle();
-
-    // Get check ID from URL
-    const params = new URLSearchParams(window.location.search);
-    let checkId = params.get("id");
-
-    if (!checkId && window.location.hash) {
-      checkId = window.location.hash.slice(1);
-    }
-
-    // Load history
-    loadHistory(checkId ? parseInt(checkId) : null);
-
-    // Load check if ID provided
-    const container = document.getElementById("check-container");
-    if (!container) return;
-
-    if (!checkId || isNaN(parseInt(checkId))) {
-      showWelcomeScreen(container);
-      return;
-    }
-
-    currentCheckId = parseInt(checkId);
-    await loadCheck(currentCheckId, container);
-  }
-
-  async function loadHistory(activeId: number | null) {
-    const listEl = document.getElementById("history-list");
-    if (!listEl) return;
-
-    try {
-      const data = await fetchHistory(50, 0);
-
-      if (data.checks.length === 0) {
-        listEl.innerHTML = "<p style='padding: 1rem; color: var(--cds-text-secondary);'>Nav pārbaužu.</p>";
-        return;
-      }
-
-      listEl.innerHTML = data.checks.map((check: HistoryCheck) => `
-        <button type="button"
-           class="history-item ${check.id === activeId ? 'active' : ''}"
-           data-id="${check.id}">
-          <span class="status-dot ${check.score === 5 ? 'pass' : 'fail'}"></span>
-          <div class="item-content">
-            <div class="item-title">${escapeHtml(check.page_title || truncateUrl(check.url, 30))}</div>
-            <div class="item-meta">${check.score === 5 ? 'OK' : check.issues_count + ' probl.'} · ${formatRelativeTime(check.created_at)}</div>
-          </div>
-        </button>
-      `).join("");
-
-      // Add click handlers
-      listEl.querySelectorAll(".history-item").forEach((item) => {
-        item.addEventListener("click", async (e) => {
-          e.preventDefault();
-          const id = parseInt((item as HTMLElement).dataset.id || "0");
-          if (id && id !== currentCheckId) {
-            window.history.pushState({}, "", `${basePath}/?id=${id}`);
-            currentCheckId = id;
-
-            listEl.querySelectorAll(".history-item").forEach((el) => el.classList.remove("active"));
-            item.classList.add("active");
-
-            if (isMobile()) {
-              window.dispatchEvent(new CustomEvent("closeSidebar"));
-            }
-
-            const container = document.getElementById("check-container");
-            if (container) {
-              container.innerHTML = '<div class="loading-container"><p>Ielādē...</p></div>';
-              await loadCheck(id, container);
-            }
-          }
-        });
-      });
-    } catch (err) {
-      listEl.innerHTML = `<p style="color: var(--cds-support-error); padding: 1rem;">Kļūda: ${err instanceof Error ? err.message : 'Nezināma'}</p>`;
-    }
-  }
-
-  async function loadCheck(checkId: number, container: HTMLElement) {
-    try {
-      const check = await fetchCheckById(checkId);
-      const result = JSON.parse(check.result_json) as CheckResult;
-      container.innerHTML = renderCheckDetail(check, result);
-
-      const copyBtn = document.getElementById("copy-btn");
-      if (copyBtn) {
-        copyBtn.addEventListener("click", async () => {
-          const text = formatResultForCopy(result);
-          await navigator.clipboard.writeText(text);
-          copyBtn.textContent = "Nokopēts!";
-          setTimeout(() => { copyBtn.textContent = "Kopēt"; }, 2000);
-        });
-      }
-    } catch (err) {
-      container.innerHTML = `<div style="color: var(--cds-support-error); padding: 1rem;">${err instanceof Error ? err.message : "Kļūda"}</div>`;
-    }
-  }
-
-  function renderCheckDetail(check: CheckDetailType, result: CheckResult): string {
-    const checksHtml = result.checks.map((checkItem: CheckItem) => {
-      const statusIcon = checkItem.status === "pass" ? "✅" : "❌";
-      const findingsHtml = checkItem.findings.length === 0
-        ? "<p style='color: var(--cds-text-secondary); margin: 0;'>Nav problēmu.</p>"
-        : `<table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
-            <thead>
-              <tr>
-                <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid #e0e0e0; background: #f4f4f4;">Elements</th>
-                <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid #e0e0e0; background: #f4f4f4;">Pašreizējais</th>
-                <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid #e0e0e0; background: #f4f4f4;">Gaidāmais</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${checkItem.findings.map((f: Finding) => `
-                <tr>
-                  <td style="padding: 0.5rem; border-bottom: 1px solid #e0e0e0;">${escapeHtml(f.element)}</td>
-                  <td style="padding: 0.5rem; border-bottom: 1px solid #e0e0e0;">${escapeHtml(f.current)}</td>
-                  <td style="padding: 0.5rem; border-bottom: 1px solid #e0e0e0;">${escapeHtml(f.expected)}</td>
-                </tr>
-              `).join("")}
-            </tbody>
-          </table>`;
-
-      return `
-        <details style="border: 1px solid #e0e0e0; border-radius: 4px; margin-bottom: 0.5rem;" ${checkItem.status === "fail" ? "open" : ""}>
-          <summary style="padding: 0.75rem 1rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; background: #f4f4f4;">
-            <span>${statusIcon}</span>
-            <span style="font-weight: 500;">${CHECK_LABELS[checkItem.id] || checkItem.id}</span>
-          </summary>
-          <div style="padding: 1rem;">
-            ${findingsHtml}
-          </div>
-        </details>
-      `;
-    }).join("");
-
-    const outlineHtml = (result.current_outline?.length > 0 || result.suggested_outline?.length > 0) ? `
-      <div class="outline-section">
-        <h2>Struktūras salīdzinājums</h2>
-        <div class="outline-grid">
-          <div class="outline-col">
-            <h3>Pašreizējā</h3>
-            <pre>${escapeHtml(result.current_outline?.join("\n") || "Nav")}</pre>
-          </div>
-          <div class="outline-col">
-            <h3>Ieteicamā</h3>
-            <pre>${escapeHtml(result.suggested_outline?.join("\n") || "Nav ieteikumu")}</pre>
-          </div>
-        </div>
-      </div>
-    ` : "";
-
-    return `
-      <div style="margin-bottom: 1.5rem;">
-        <h1 style="font-size: 1.5rem; margin: 0 0 0.5rem;">${escapeHtml(check.page_title || "Bez nosaukuma")}</h1>
-        <a href="${escapeHtml(check.url)}" target="_blank" rel="noopener noreferrer" style="color: #0f62fe; text-decoration: none; font-size: 0.875rem;">
-          ${escapeHtml(truncateUrl(check.url, 60))} ↗
-        </a>
-        <div style="color: #525252; font-size: 0.875rem; margin-top: 0.25rem;">${formatDate(check.created_at)}</div>
-      </div>
-
-      <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 4px; font-weight: 600; margin: 1rem 0; background: ${result.compliant ? '#198038' : '#da1e28'}; color: white;">
-        ${result.compliant ? "✅ Atbilst WCAG 2.4.6" : "❌ Neatbilst WCAG 2.4.6"}
-      </div>
-
-      ${result.summary ? `<div style="background: #f4f4f4; padding: 1rem; border-radius: 4px; margin-bottom: 1.5rem; line-height: 1.5;">${escapeHtml(result.summary)}</div>` : ""}
-
-      <h2 style="font-size: 1.25rem; margin-bottom: 1rem;">Pārbaudes</h2>
-      ${checksHtml}
-
-      ${outlineHtml}
-
-      <div style="margin-top: 1.5rem;">
-        <button id="copy-btn" style="padding: 0.5rem 1rem; border-radius: 4px; border: none; cursor: pointer; font-size: 0.875rem; background: #e0e0e0;">Kopēt</button>
-      </div>
-    `;
-  }
-
-  function escapeHtml(str: string): string {
-    return str
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
-
-  function formatResultForCopy(result: CheckResult): string {
-    const lines: string[] = [];
-    lines.push(`WCAG: ${result.compliant ? "Atbilst" : "Neatbilst"}`);
-    lines.push("");
-    for (const check of result.checks) {
-      const icon = check.status === "pass" ? "✅" : "❌";
-      lines.push(`${icon} ${CHECK_LABELS[check.id] || check.id}`);
-      for (const f of check.findings) {
-        lines.push(`  - ${f.element}: ${f.current} → ${f.expected}`);
-      }
-    }
-    if (result.summary) { lines.push(""); lines.push(result.summary); }
-    return lines.join("\n");
-  }
-
-  init();
-</script>

@@ -1,0 +1,525 @@
+---
+// share.astro — kopīgotā pārbaudes lapa ar Carbon React komponentēm
+import Layout from "../components/astro/Layout.astro";
+import SharePage from "../components/react/SharePage";
+---
+
+<Layout title="Kopīgotā pārbaude">
+  <SharePage client:load />
+</Layout>
+
+<style is:global>
+  /* ===== Base Reset for Share Page ===== */
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+  /* ===== Share Page Layout ===== */
+  .share-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #f4f4f4;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .share-page .cds--header {
+    display: flex;
+    align-items: center;
+  }
+
+  .shared-badge {
+    margin-left: auto;
+    margin-right: 1rem;
+  }
+
+  /* ===== Share Main ===== */
+  .share-main {
+    flex: 1;
+    padding: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 48px;
+    overflow: hidden;
+  }
+
+  .share-loading,
+  .share-error {
+    background: #fff;
+    border-radius: 8px;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .share-error h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .share-error p {
+    color: #525252;
+    margin-bottom: 1rem;
+  }
+
+  .share-error-hint {
+    font-size: 0.875rem;
+    font-style: italic;
+    color: #6f6f6f;
+    margin-bottom: 1.5rem;
+  }
+
+  .share-content {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  /* ===== Share Check Header ===== */
+  .share-check-header h1 {
+    font-size: 1.5rem;
+    margin: 0 0 0.5rem;
+    word-break: break-word;
+  }
+
+  .share-check-url {
+    font-size: 0.875rem;
+    word-break: break-all;
+  }
+
+  .share-check-meta {
+    font-size: 0.875rem;
+    color: #525252;
+    margin-top: 0.5rem;
+  }
+
+  /* ===== Compliance Badge ===== */
+  .share-content .compliance-badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.5rem;
+    font-weight: 600;
+  }
+
+  .share-content .compliance-badge svg {
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+
+  /* ===== Summary Box ===== */
+  .share-content .summary-box {
+    background: #f4f4f4;
+    padding: 1rem;
+    border-radius: 4px;
+    line-height: 1.5;
+    word-break: break-word;
+  }
+
+  /* ===== Checks Section ===== */
+  .share-content h2 {
+    font-size: 1.25rem;
+    margin: 0;
+  }
+
+  .share-content .check-item-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .share-content .status-pass {
+    color: #198038;
+  }
+
+  .share-content .status-fail {
+    color: #da1e28;
+  }
+
+  .share-content .no-issues {
+    color: #525252;
+    margin: 0;
+  }
+
+  /* ===== Findings Cards ===== */
+  .share-content .findings-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .share-content .finding-card {
+    background: #f4f4f4;
+    border-radius: 4px;
+    border-left: 3px solid #da1e28;
+    padding: 0.75rem 1rem;
+  }
+
+  .share-content .finding-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .share-content .finding-element {
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  .share-content .finding-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding-left: 1.5rem;
+  }
+
+  .share-content .finding-row {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  .share-content .finding-label {
+    color: #525252;
+    flex-shrink: 0;
+  }
+
+  .share-content .finding-value {
+    word-break: break-word;
+  }
+
+  .share-content .finding-expected {
+    color: #198038;
+  }
+
+  /* ===== Accordion Fix ===== */
+  .share-content .cds--accordion__content {
+    overflow-x: auto;
+  }
+
+  /* ===== Outline Section - Responsive Fix ===== */
+  .share-content .outline-section {
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .share-content .outline-comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .share-content .outline-col {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .share-content .outline-col h3 {
+    font-size: 0.875rem;
+    color: #525252;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+
+  /* Fix Carbon CodeSnippet width - CRITICAL */
+  .share-content .outline-code,
+  .share-content .outline-code.cds--snippet,
+  .share-content .outline-code.cds--snippet--multi {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .share-content .cds--snippet-container {
+    max-width: 100% !important;
+  }
+
+  .share-content .outline-code pre,
+  .share-content .cds--snippet--multi pre {
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  .share-content .outline-current .cds--snippet--multi {
+    background: #fff8e6;
+    border: 1px solid #f1c21b;
+  }
+
+  .share-content .outline-suggested .cds--snippet--multi,
+  .share-content .outline-good.cds--snippet--multi {
+    background: #e8f4e8;
+    border: 1px solid #198038;
+  }
+
+  .share-content .outline-success {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .share-content .outline-success .cds--tag {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.25rem;
+  }
+
+  .share-content .outline-success .cds--tag svg {
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+
+  /* ===== CTA Section ===== */
+  .cta-section {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e0e0e0;
+    text-align: center;
+  }
+
+  .cta-section h2 {
+    font-size: 1.5rem;
+    margin: 0 0 0.5rem;
+  }
+
+  .cta-section p {
+    color: #525252;
+    margin-bottom: 1.5rem;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* ===== Footer ===== */
+  .share-footer {
+    background: #161616;
+    color: #c6c6c6;
+    padding: 1.5rem 2rem;
+    text-align: center;
+    font-size: 0.875rem;
+  }
+
+  .share-footer a {
+    color: #78a9ff;
+  }
+
+  .share-footer p {
+    margin: 0;
+  }
+
+  /* ===== Large Desktop (1440px+) ===== */
+  @media (min-width: 1440px) {
+    .share-main {
+      max-width: 1000px;
+    }
+  }
+
+  /* ===== Desktop (1280px - 1439px) ===== */
+  @media (max-width: 1439px) {
+    .share-main {
+      max-width: 850px;
+    }
+  }
+
+  /* ===== Tablet (768px - 1023px) ===== */
+  @media (max-width: 1023px) {
+    .share-main {
+      padding: 1.5rem;
+    }
+
+    .share-content {
+      padding: 1.5rem;
+    }
+
+    .share-check-header h1 {
+      font-size: 1.25rem;
+    }
+
+    .cta-section h2 {
+      font-size: 1.25rem;
+    }
+  }
+
+  /* ===== Mobile/Small Tablet (up to 768px) ===== */
+  @media (max-width: 768px) {
+    .share-main {
+      padding: 1rem;
+      max-width: 100%;
+    }
+
+    .share-content {
+      padding: 1rem;
+    }
+
+    .share-content .outline-comparison {
+      grid-template-columns: 1fr;
+    }
+
+    .share-loading,
+    .share-error {
+      padding: 2rem 1rem;
+    }
+
+    .cta-section {
+      padding-top: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .cta-buttons {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .cta-buttons .cds--btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .share-footer {
+      padding: 1rem;
+    }
+
+  }
+
+  /* ===== Small Mobile (up to 480px) ===== */
+  @media (max-width: 480px) {
+    .share-main {
+      padding: 0.75rem;
+    }
+
+    .share-content {
+      padding: 0.75rem;
+      gap: 1rem;
+    }
+
+    .share-check-header h1 {
+      font-size: 1.125rem;
+    }
+
+    .share-content h2 {
+      font-size: 1.125rem;
+    }
+
+    .cta-section h2 {
+      font-size: 1.125rem;
+    }
+
+    .cta-section p {
+      font-size: 0.875rem;
+    }
+
+    .shared-badge {
+      margin-right: 0.5rem;
+      font-size: 0.75rem;
+    }
+  }
+
+  /* ===== Extra Small Mobile (up to 320px) ===== */
+  @media (max-width: 320px) {
+    .share-content {
+      padding: 0.5rem;
+    }
+
+    .share-check-header h1 {
+      font-size: 1rem;
+    }
+
+    .cta-section {
+      padding-top: 1rem;
+    }
+  }
+
+  /* ===== Touch Device Optimizations ===== */
+  @media (hover: none) and (pointer: coarse) {
+    .cds--btn {
+      min-height: 48px;
+    }
+
+    .cds--accordion__heading {
+      min-height: 48px;
+    }
+  }
+
+  /* ===== Reduced Motion ===== */
+  @media (prefers-reduced-motion: reduce) {
+    .share-page * {
+      transition: none !important;
+    }
+  }
+
+  /* ===== High Contrast Mode ===== */
+  @media (prefers-contrast: high) {
+    .share-content {
+      border: 2px solid #000;
+    }
+
+    .compliance-badge {
+      border: 2px solid currentColor;
+    }
+  }
+
+  /* ===== Dark Mode Support ===== */
+  @media (prefers-color-scheme: dark) {
+    .share-content .outline-current .cds--snippet--multi {
+      background: rgba(255, 248, 230, 0.1);
+      border-color: #f1c21b;
+    }
+
+    .share-content .outline-suggested .cds--snippet--multi,
+    .share-content .outline-good.cds--snippet--multi {
+      background: rgba(232, 244, 232, 0.1);
+      border-color: #198038;
+    }
+  }
+
+  /* ===== Print Styles ===== */
+  @media print {
+    .share-page {
+      background: white;
+    }
+
+    .share-page .cds--header,
+    .cta-section,
+    .share-footer {
+      display: none !important;
+    }
+
+    .share-main {
+      margin-top: 0;
+      padding: 0;
+      max-width: none;
+    }
+
+    .share-content {
+      box-shadow: none;
+      padding: 0;
+    }
+  }
+</style>
